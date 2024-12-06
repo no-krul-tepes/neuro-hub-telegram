@@ -8,7 +8,9 @@
     },
     "dependencies": {
         "@prisma/client": "^6.0.1",
-        "grammy": "^1.17.1"
+        "axios": "^1.7.9",
+        "grammy": "^1.17.1",
+        "next": "^15.0.4"
     },
     "devDependencies": {
         "@types/node": "^22.10.1",

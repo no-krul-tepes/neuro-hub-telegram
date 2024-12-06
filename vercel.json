@@ -2,8 +2,7 @@
   "functions": {
     "api/bot.ts": {
       "memory": 1024,
-      "maxDuration": 10,
-      "runtime": "nodejs22.x"
+      "maxDuration": 10
     }
   }
 }
