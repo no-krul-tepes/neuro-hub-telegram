@@ -5,7 +5,6 @@ import { referCommand } from "../commands/refer";
 import { miniappCommand } from "../commands/miniapp";
 import { helpCommand } from "../commands/help";
 
-// Получаем переменные из окружения
 const token = process.env.BOT_TOKEN;
 const secretToken = process.env.BOT_SECRET_TOKEN;
 
