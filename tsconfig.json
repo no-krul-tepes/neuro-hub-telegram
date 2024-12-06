@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "ES2019",
     "module": "commonjs",
-    "rootDir": "./src",
+    "rootDir": "./",
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "outDir": "./build",
@@ -12,11 +12,11 @@
     "skipLibCheck": true
   },
   "include": [
-    "src/api/**/*.ts",
-    "src/commands/**/*.ts",
-    "src/services/**/*.ts",
-    "src/models/**/*.ts",
-    "src/utils/**/*.ts"
+    "api/*.ts",
+    "commands/**/*.ts",
+    "services/**/*.ts",
+    "models/**/*.ts",
+    "utils/**/*.ts"
   ],
   "exclude": [
     "node_modules"
