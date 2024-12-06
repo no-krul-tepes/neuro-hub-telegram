@@ -3,7 +3,7 @@
     "api/bot.ts": {
       "memory": 1024,
       "maxDuration": 10,
-      "runtime": "node"
+      "runtime": "nodejs22.x"
     }
   }
 }
