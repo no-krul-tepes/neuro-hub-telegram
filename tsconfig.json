@@ -15,8 +15,6 @@
     "api/*.ts",
     "commands/**/*.ts",
     "services/**/*.ts",
-    "models/**/*.ts",
-    "utils/**/*.ts"
   ],
   "exclude": [
     "node_modules"

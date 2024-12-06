@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
-import { generateReferralCode } from "../services/referralService";
+import { NextRequest, NextResponse } from 'next/server';
+import { generateReferralCode } from '../services/referralService';
 
 export async function POST(req: NextRequest) {
-    const { userId } = await req.json(); // Получаем userId из тела запроса
+    const { userId } = await req.json();
 
     if (!userId) {
         return NextResponse.json({ error: 'userId is required' }, { status: 400 });

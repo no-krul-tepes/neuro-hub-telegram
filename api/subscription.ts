@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { handleSubscription } from "../services/subscriptionService";
 
 export async function POST(req: NextRequest) {
-    const { userId, subscriptionType } = await req.json(); // Получаем данные из тела запроса
+    const { userId, subscriptionType } = await req.json();
 
     if (!userId || !subscriptionType) {
         return NextResponse.json({ error: 'userId and subscriptionType are required' }, { status: 400 });
