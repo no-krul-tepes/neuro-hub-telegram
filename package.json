@@ -7,10 +7,12 @@
         "start": "vercel dev"
     },
     "dependencies": {
+        "@prisma/client": "^6.0.1",
         "grammy": "^1.17.1"
     },
     "devDependencies": {
         "@types/node": "^22.10.1",
+        "prisma": "^6.0.1",
         "typescript": "^5.7.2"
     }
 }

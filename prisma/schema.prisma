@@ -1,0 +1,120 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  userId                Int                @id @default(autoincrement())
+  balance               Int                @default(0)
+  subscriptionStatus    SubscriptionStatus
+  subscriptionType      SubscriptionType?
+  subscriptionStartDate DateTime?          @db.Timestamp
+  lastSubscriptionDate  DateTime?          @db.Timestamp
+  referralCode          String?            @unique
+  referredBy            Int?
+  createdAt             DateTime           @default(now()) @db.Timestamp
+  updatedAt             DateTime           @default(now()) @updatedAt @db.Timestamp
+  isDeleted             Boolean            @default(false)
+  subscriptions         Subscription[]
+  tokenTransactions     TokenTransaction[]
+  userTasks             UserTask[]
+  referrals             Referral[]         @relation("Referrer")
+  referredUsers         Referral[]         @relation("Referee")
+
+  @@index([referralCode])
+  @@index([referredBy])
+}
+
+model Task {
+  taskId         Int        @id @default(autoincrement())
+  taskName       String
+  tokensReward   Int
+  iconUrl        String?
+  createdAt      DateTime   @default(now()) @db.Timestamp
+  updatedAt      DateTime   @default(now()) @updatedAt @db.Timestamp
+  expirationDate DateTime?  @db.Timestamp
+  isDeleted      Boolean    @default(false)
+  UserTask       UserTask[]
+}
+
+model UserTask {
+  userTaskId     Int      @id @default(autoincrement())
+  userId         Int
+  taskId         Int
+  completionDate DateTime @db.Timestamp
+  user           User     @relation(fields: [userId], references: [userId])
+  task           Task     @relation(fields: [taskId], references: [taskId])
+  isDeleted      Boolean  @default(false)
+
+  @@unique([userId, taskId])
+  @@index([userId])
+  @@index([taskId])
+}
+
+model TokenTransaction {
+  transactionId   Int             @id @default(autoincrement())
+  userId          Int
+  tokens          Int
+  transactionType TransactionType
+  description     String
+  transactionDate DateTime        @default(now()) @db.Timestamp
+  user            User            @relation(fields: [userId], references: [userId])
+  isDeleted       Boolean         @default(false)
+
+  @@index([transactionDate])
+}
+
+model Subscription {
+  subscriptionId        Int                @id @default(autoincrement())
+  userId                Int
+  subscriptionType      SubscriptionType
+  subscriptionStartDate DateTime           @default(now()) @db.Timestamp
+  subscriptionEndDate   DateTime
+  subscriptionStatus    SubscriptionStatus
+  paymentStatus         PaymentStatus
+  user                  User               @relation(fields: [userId], references: [userId])
+  isDeleted             Boolean            @default(false)
+}
+
+model Referral {
+  referralId    Int      @id @default(autoincrement())
+  referrerId    Int
+  refereeId     Int
+  tokensAwarded Int      @default(0)
+  referralDate  DateTime @default(now()) @db.Timestamp
+  referrer      User     @relation("Referrer", fields: [referrerId], references: [userId])
+  referee       User     @relation("Referee", fields: [refereeId], references: [userId])
+  isDeleted     Boolean  @default(false)
+
+  @@unique([referrerId, refereeId])
+  @@index([referrerId])
+  @@index([refereeId])
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  INACTIVE
+  PENDING
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+enum SubscriptionType {
+  ONE_MONTH
+  THREE_MONTHS
+  SIX_MONTHS
+  TWELVE_MONTHS
+}
+
+enum TransactionType {
+  IMPLEMENTATION
+  EXPENDITURE
+}
