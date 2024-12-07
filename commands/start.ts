@@ -25,7 +25,13 @@ export const startCommand = async (ctx: MyContext) => {
 
     const referralCode = ctx.message?.text?.split(' ')[1]; // Получаем реферальный код из команды, если он есть
 
-    // Параллельные асинхронные задачи
+    // Отправляем приветственное сообщение сразу
+    await ctx.reply(
+        `Привет, ${userName}! Добро пожаловать в наш сервис! ` +
+        `Используйте команду /help, чтобы узнать доступные команды.`
+    );
+
+    // Параллельные асинхронные задачи для получения данных
     const getUserAvatar = async () => {
         if (ctx.from?.id) {
             try {
@@ -42,7 +48,7 @@ export const startCommand = async (ctx: MyContext) => {
         return null;  // Возвращаем null, если фото не найдено
     };
 
-    const createUserOnServer = async () => {
+    const createUserOnServer = async (userAvatar: string | null) => {
         try {
             const userResponse = await axios.post(`https://${config.url}/api/user`, {
                 userId,
@@ -60,23 +66,13 @@ export const startCommand = async (ctx: MyContext) => {
         }
     };
 
-    // Параллельно выполняем запросы
-    const userAvatarPromise = getUserAvatar();
-    const createUserPromise = createUserOnServer();
+    // Получаем аватар и создаем пользователя на сервере
+    const userAvatar = await getUserAvatar();
+    await createUserOnServer(userAvatar);
 
-    // Ждем завершения запросов
-    const userAvatar = await userAvatarPromise;
-    await createUserPromise;
-
-    // Сохраняем данные в сессии
+    // Сохраняем данные в сессии после отправки сообщения
     session.userId = userId;
     session.userName = userName;
     session.userAvatar = userAvatar || undefined;
     session.referralCode = referralCode || undefined;
-
-    // Отправляем приветственное сообщение
-    await ctx.reply(
-        `Привет, ${userName}! Добро пожаловать в наш сервис! ` +
-        `Используйте команду /help, чтобы узнать доступные команды.`
-    );
 };
