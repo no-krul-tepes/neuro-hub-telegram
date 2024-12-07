@@ -1,8 +1,19 @@
-import { Context } from "grammy";
+import { Context, LazySessionFlavor } from "grammy";
 import { config } from "../config/config";
 
-export const MiniAppCommand = async (ctx: Context) => {
-    const userId = ctx.from?.id;
+interface SessionData {
+    userId: number;
+    userName: string;
+    userAvatar?: string;
+    referralCode?: string;
+}
+
+type MyContext = Context & LazySessionFlavor<SessionData>;
+
+export const MiniAppCommand = async (ctx: MyContext) => {
+    const session = await ctx.session;
+
+    const userId = session.userId;
 
     if (!userId) {
         return await ctx.reply("Не удалось получить ваш ID. Попробуйте снова.");
@@ -10,7 +21,6 @@ export const MiniAppCommand = async (ctx: Context) => {
 
     const MiniAppUrl = `https://${config.url}/MiniApp/${userId}`;
 
-    // Отправляем пользователю ссылку на мини-приложение
     await ctx.reply(
         `Перейдите в наш Web Mini App для управления задачами, балансом и транзакциями: ${MiniAppUrl}`
     );

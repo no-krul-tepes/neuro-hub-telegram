@@ -1,11 +1,10 @@
-import { Bot, Context, session, SessionFlavor, webhookCallback } from 'grammy'
-import { PrismaAdapter } from "@grammyjs/storage-prisma";
+import { Bot, Context, lazySession, LazySessionFlavor, webhookCallback } from 'grammy'
 import { startCommand } from "../commands/start";
 import { subscribeCommand } from "../commands/subscribe";
 import { referCommand } from "../commands/refer";
 import { MiniAppCommand } from "../commands/miniapp";
 import { helpCommand } from "../commands/help";
-import prisma from '../prisma/prisma'
+import { freeStorage } from '@grammyjs/storage-free';
 
 // Получаем токен из окружения
 const token = process.env.BOT_TOKEN;
@@ -16,29 +15,34 @@ if (!token || !secretToken) {
     throw new Error("BOT_TOKEN or BOT_SECRET_TOKEN is unset");
 }
 
-// Модель данных сессии для нашего контекста
+// Интерфейс для данных сессии
 interface SessionData {
-    userId: number | null;
-    subscriptionStatus: "ACTIVE" | "INACTIVE";
+    userId: number;
+    userName: string;
+    userAvatar?: string;
+    referralCode?: string;
 }
 
-// Создаем контекст для grammy
-type MyContext = Context & SessionFlavor<SessionData>;
+// Определяем тип контекста
+type MyContext = Context & LazySessionFlavor<SessionData>;
 
-// Создаем бота и добавляем Prisma в качестве хранилища сессий
-const bot = new Bot<MyContext>(token);
+const bot = new Bot<MyContext>(process.env.BOT_TOKEN!);
 
-bot.use(
-    session({
-        initial: () => ({ userId: null, subscriptionStatus: "INACTIVE" }),
-        storage: new PrismaAdapter(prisma.session),
-    })
-);
 // Обработчик ошибок
 bot.catch(async (err) => {
     console.error("Error occurred:", err);
     // Логирование ошибки или уведомление администратора
 });
+
+// Подключаем ленивые сессии через middleware
+bot.use(
+    lazySession({
+        initial: (): SessionData => ({
+            userId: 0,
+            userName: '',
+        }),
+        storage: freeStorage<SessionData>(token),     })
+);
 
 // Подключаем команды
 bot.command("start", startCommand);
@@ -50,5 +54,5 @@ bot.command("help", helpCommand);
 // Экспортируем webhook-обработчик
 export const POST = webhookCallback(bot, "std/http", {
     onTimeout: "throw",
-    secretToken
+    secretToken,
 });
