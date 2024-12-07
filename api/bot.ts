@@ -1,10 +1,11 @@
-import { Bot, Context, SessionFlavor, webhookCallback } from 'grammy'
+import { Bot, Context, session, SessionFlavor, webhookCallback } from 'grammy'
 import { PrismaAdapter } from "@grammyjs/storage-prisma";
 import { startCommand } from "../commands/start";
 import { subscribeCommand } from "../commands/subscribe";
 import { referCommand } from "../commands/refer";
 import { MiniAppCommand } from "../commands/miniapp";
 import { helpCommand } from "../commands/help";
+import prisma from '../prisma/prisma'
 
 // Получаем токен из окружения
 const token = process.env.BOT_TOKEN;
@@ -27,13 +28,12 @@ type MyContext = Context & SessionFlavor<SessionData>;
 // Создаем бота и добавляем Prisma в качестве хранилища сессий
 const bot = new Bot<MyContext>(token);
 
-// bot.use(
-//     session({
-//         initial: () => ({ userId: null, subscriptionStatus: "INACTIVE" }),
-//         storage: new PrismaAdapter(prisma.session),
-//     })
-// );
-
+bot.use(
+    session({
+        initial: () => ({ userId: null, subscriptionStatus: "INACTIVE" }),
+        storage: new PrismaAdapter(prisma.session),
+    })
+);
 // Обработчик ошибок
 bot.catch(async (err) => {
     console.error("Error occurred:", err);
@@ -52,8 +52,3 @@ export const POST = webhookCallback(bot, "std/http", {
     onTimeout: "throw",
     secretToken
 });
-
-// Конфигурация для edge runtime
-export const config = {
-    runtime: "edge",
-};
