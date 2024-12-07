@@ -1,5 +1,5 @@
 import { type StorageAdapter } from 'grammy';
-import { SessionDelegate } from '../session-delegate'
+import { SessionDelegate } from '../types/session-delegate'
 
 
 export class PrismaAdapter<T> implements StorageAdapter<T> {

@@ -2,19 +2,12 @@ import { Context } from 'grammy';
 import axios from 'axios';
 import { config } from '../config/config';
 import { LazySessionFlavor } from 'grammy';
-
-// Интерфейс для данных сессии
-interface SessionData {
-    userId: number;
-    userName: string;
-    userAvatar?: string;
-    referralCode?: string;
-}
+import { SessionData } from '../types/session-delegate'
 
 type MyContext = Context & LazySessionFlavor<SessionData>;
 
 export const startCommand = async (ctx: MyContext) => {
-    const session = await ctx.session; // Ожидаем загрузку сессии
+    const session = await ctx.session;
 
     const userId = ctx.from?.id;
     const userName = ctx.from?.first_name || 'Unknown User';
@@ -23,16 +16,15 @@ export const startCommand = async (ctx: MyContext) => {
         return await ctx.reply("Не удалось получить ваш ID. Попробуйте снова.");
     }
 
-    const referralCode = ctx.message?.text?.split(' ')[1]; // Получаем реферальный код из команды, если он есть
+    const referralCode = ctx.message?.text?.split(' ')[1];
 
-    // Проверяем, существует ли уже пользователь в сессии
     if (session.userId === userId) {
         // Если пользователь уже в сессии, отправляем приветственное сообщение
         await ctx.reply(
             `Привет, ${userName}! Добро пожаловать обратно в наш сервис! ` +
             `Используйте команду /help, чтобы узнать доступные команды.`
         );
-        return; // Прерываем выполнение команды, если пользователь уже существует
+        return;
     }
 
     // Отправляем приветственное сообщение сразу

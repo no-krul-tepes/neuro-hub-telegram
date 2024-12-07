@@ -25,3 +25,10 @@ export interface SessionDelegate {
     }) => Promise<Session>;
     delete: (input: { where: Where }) => Promise<Session>;
 }
+
+export interface SessionData {
+    userId: number;
+    userName: string;
+    userAvatar?: string;
+    referralCode?: string;
+}
