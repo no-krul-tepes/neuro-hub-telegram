@@ -4,7 +4,8 @@ import { subscribeCommand } from "../commands/subscribe";
 import { referCommand } from "../commands/refer";
 import { MiniAppCommand } from "../commands/miniapp";
 import { helpCommand } from "../commands/help";
-import { freeStorage } from '@grammyjs/storage-free';
+import { PrismaAdapter } from '../prisma/session'
+import prisma from '../prisma/prisma'
 
 // Получаем токен из окружения
 const token = process.env.BOT_TOKEN;
@@ -26,7 +27,7 @@ interface SessionData {
 // Определяем тип контекста
 type MyContext = Context & LazySessionFlavor<SessionData>;
 
-const bot = new Bot<MyContext>(process.env.BOT_TOKEN!);
+const bot = new Bot<MyContext>(token);
 
 // Обработчик ошибок
 bot.catch(async (err) => {
@@ -41,9 +42,9 @@ bot.use(
             userId: 0,
             userName: '',
         }),
-        storage: freeStorage<SessionData>(token),     })
+        storage: new PrismaAdapter(prisma.session),
+    })
 );
-
 // Подключаем команды
 bot.command("start", startCommand);
 bot.command("subscribe", subscribeCommand);
