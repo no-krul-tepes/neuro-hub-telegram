@@ -3,7 +3,7 @@
     "author": "ashurumaru",
     "scripts": {
         "dev": "vercel dev",
-        "build": "tsc",
+        "build": "tsc && prisma generate",
         "start": "vercel dev"
     },
     "dependencies": {
