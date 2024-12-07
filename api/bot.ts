@@ -3,7 +3,7 @@ import { PrismaAdapter } from "@grammyjs/storage-prisma";
 import { startCommand } from "../commands/start";
 import { subscribeCommand } from "../commands/subscribe";
 import { referCommand } from "../commands/refer";
-import { miniappCommand } from "../commands/miniapp";
+import { MiniAppCommand } from "../commands/miniapp";
 import { helpCommand } from "../commands/help";
 import prisma from '../prisma/prisma'
 
@@ -34,7 +34,6 @@ bot.use(
         storage: new PrismaAdapter(prisma.session),
     })
 );
-
 // Обработчик ошибок
 bot.catch(async (err) => {
     console.error("Error occurred:", err);
@@ -45,13 +44,13 @@ bot.catch(async (err) => {
 bot.command("start", startCommand);
 bot.command("subscribe", subscribeCommand);
 bot.command("refer", referCommand);
-bot.command("miniapp", miniappCommand);
+bot.command("MiniApp", MiniAppCommand);
 bot.command("help", helpCommand);
 
 // Экспортируем webhook-обработчик
 export const POST = webhookCallback(bot, "std/http", {
     onTimeout: "throw",
-    secretToken,
+    secretToken
 });
 
 // Конфигурация для edge runtime
